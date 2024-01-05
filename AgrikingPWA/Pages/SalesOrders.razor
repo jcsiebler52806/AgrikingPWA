@@ -1,0 +1,62 @@
+﻿@page "/SalesOrders"
+
+@inject NavigationManager UriHelper
+@using AgriKingApp.Api
+@using AgriKingApp.Models
+@using AgriKingBlazorApp.Data
+@using Syncfusion.Blazor.Grids
+
+@inject AgriKingApi AgriKingApi
+
+@* desired render mode define here *@
+@* @rendermode InteractiveAuto *@
+
+<div class="panel m-b-xs flex-min">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12">
+                <h4 class="text-gray m-none hidden-xs">
+                    Sales Orders
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="panelSalesOrder" class="panel m-b-xs flex-max">
+    <div id="tablePanelBody" class="panel-body flex-container-vertical">
+        <Syncfusion.Blazor.SfGrid DataSource="@salesOrders" AllowSorting="true" AllowFiltering="true" Height="100%" EnableInfiniteScrolling="true">
+            @* <GridPageSettings PageSize="5"></GridPageSettings>  *@
+            <Syncfusion.Blazor.GridColumns>
+                
+                <Syncfusion.Blazor.GridColumn HeaderText="Order ID" AutoFit="true">
+                    <Template>
+                        {
+                            var SalesOrder = (context as SalesOrder);
+                            <div><a href="#" onclick="(() => Navigate(SalesOrder))">SalesOrder.Id</a></div>
+                        }
+                    </Template>
+                </Syncfusion.Blazor.GridColumn>
+                
+                <Syncfusion.Blazor.GridColumn Field="Customer.DisplayName" HeaderText="Customer Name"></Syncfusion.Blazor.GridColumn>
+                <Syncfusion.Blazor.GridColumn Field=OrderDateTime HeaderText=" Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Right" AutoFit="true"></Syncfusion.Blazor.GridColumn>
+                <Syncfusion.Blazor.GridColumn Field="Salesperson.DisplayName" HeaderText="SalesPerson" HideAtMedia="(min-width:991px)"></Syncfusion.Blazor.GridColumn>
+                <Syncfusion.Blazor.GridColumn AutoFit="true" Field="SalesOrderDetails" HeaderText="Total" TextAlign="TextAlign.Right"></Syncfusion.Blazor.GridColumn>
+            </Syncfusion.Blazor.GridColumns>
+        </Syncfusion.Blazor.SfGrid>
+    </div>
+</div>
+
+@code {
+    private List<SalesOrder> salesOrders = new List<SalesOrder>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        salesOrders = SalesOrdersApi.GetSalesOrders("FORBESS");
+    }
+
+    private void Navigate(SalesOrder SalesOrder)
+    {
+        UriHelper.NavigateTo($"/SalesOrderDetails/{SalesOrder.Id}");
+    }
+}
